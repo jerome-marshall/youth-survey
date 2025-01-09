@@ -4,6 +4,7 @@ import { Question } from "@/components/question";
 import { SurveyLayout } from "@/components/survey-layout";
 import { Button } from "@/components/ui/button";
 import { survey } from "@/data/survey";
+import { isConditionalQuestion } from "@/utils/question";
 import { useState } from "react";
 
 export default function SurveyPage() {
@@ -21,52 +22,79 @@ export default function SurveyPage() {
   const currentQuestion = survey.questions[currentQuestionIndex];
 
   const handleBack = () => {
-    // go to previous question
-    setCurrentQuestionIndex((prevIndex) => {
-      if (prevIndex > 0) {
-        return prevIndex - 1;
-      }
-      return prevIndex;
+    let prevIndex = currentQuestionIndex - 1;
+    if (prevIndex < 0) return;
+
+    let prevQuestion = survey.questions[prevIndex];
+    while (
+      prevQuestion &&
+      isConditionalQuestion(prevQuestion.id) &&
+      prevIndex >= 0
+    ) {
+      prevIndex--;
+      prevQuestion = survey.questions[prevIndex];
+    }
+    if (prevIndex < 0 || !prevQuestion) return;
+
+    // Load previous answer
+    const prevAnswer = answers[prevQuestion.id];
+    setSelectedOptions(
+      prevAnswer ? (Array.isArray(prevAnswer) ? prevAnswer : [prevAnswer]) : [],
+    );
+
+    // Clean up answers for skipped conditional questions
+    const skippedQuestions = survey.questions
+      .slice(prevIndex + 1, currentQuestionIndex + 1)
+      .map((q) => q.id);
+    setAnswers((prev) => {
+      const newAnswers = { ...prev };
+      skippedQuestions.forEach((id) => delete newAnswers[id]);
+      return newAnswers;
     });
 
-    // set selected options to previous question's answers
-    if (currentQuestion) {
-      const prevQuestion = survey.questions[currentQuestionIndex - 1];
-
-      if (prevQuestion) {
-        const prevAnswer = answers[prevQuestion.id];
-        console.log("🚀 ~ handleBack ~ prevAnswer:", prevAnswer);
-        setSelectedOptions(
-          prevAnswer
-            ? Array.isArray(prevAnswer)
-              ? prevAnswer
-              : [prevAnswer]
-            : [],
-        );
-      }
-    }
+    // Update index
+    setCurrentQuestionIndex(prevIndex);
   };
 
   const handleNext = () => {
-    // go to next question
-    setCurrentQuestionIndex((prevIndex) => {
-      if (prevIndex < survey.questions.length - 1) {
-        return prevIndex + 1;
-      }
-      return prevIndex;
-    });
-
     if (!currentQuestion) return;
 
-    // save answers
+    // Save current answers first
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
       [currentQuestion.id]: selectedOptions,
     }));
 
-    // set selected options
-    const nextQuestion = survey.questions[currentQuestionIndex + 1];
-    if (nextQuestion) {
+    // Find next question index considering conditions
+    let nextIndex = currentQuestionIndex + 1;
+    while (nextIndex < survey.questions.length) {
+      const nextQuestion = survey.questions[nextIndex];
+
+      if (!nextQuestion) return;
+
+      // Skip conditional questions if condition not met
+      if (
+        isConditionalQuestion(nextQuestion.id) &&
+        "condition" in nextQuestion
+      ) {
+        const parentAnswer = answers[nextQuestion.condition.parentId];
+        if (
+          !parentAnswer ||
+          (Array.isArray(parentAnswer)
+            ? !parentAnswer.includes(nextQuestion.condition.triggerOptionId)
+            : parentAnswer !== nextQuestion.condition.triggerOptionId)
+        ) {
+          nextIndex++;
+          continue;
+        }
+      }
+      break;
+    }
+
+    // Update index and load next question's answers
+    if (nextIndex < survey.questions.length) {
+      const nextQuestion = survey.questions[nextIndex];
+      if (!nextQuestion) return;
       const nextAnswer = answers[nextQuestion.id];
       setSelectedOptions(
         nextAnswer
@@ -75,10 +103,8 @@ export default function SurveyPage() {
             : [nextAnswer]
           : [],
       );
-    }
-
-    // if last question, set isCompleted to true
-    if (currentQuestionIndex === survey.questions.length - 1) {
+      setCurrentQuestionIndex(nextIndex);
+    } else {
       setIsCompleted(true);
     }
   };
