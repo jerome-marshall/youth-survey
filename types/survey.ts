@@ -1,4 +1,4 @@
-export type QuestionType = 'single' | 'multiple' | 'text' | 'scale';
+export type QuestionType = "single" | "multiple" | "text" | "ranking";
 
 export interface Option {
   id: string;
@@ -25,4 +25,3 @@ export type Question = BaseQuestion | ConditionalQuestion;
 export interface Survey {
   questions: Question[];
 }
-
