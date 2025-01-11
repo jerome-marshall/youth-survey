@@ -26,8 +26,12 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    survey: Survey;
+  };
+  globalsSelect: {
+    survey: SurveySelect<false> | SurveySelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -61,6 +65,7 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  name?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -129,6 +134,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -170,6 +176,64 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "survey".
+ */
+export interface Survey {
+  id: number;
+  title?: string | null;
+  questions?:
+    | {
+        questionId: string;
+        type: 'single' | 'multiple' | 'ranking' | 'text';
+        text: string;
+        options: {
+          optionId: number;
+          text: string;
+          id?: string | null;
+        }[];
+        condition?: {
+          parentQuestionId?: string | null;
+          optionId?: number | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "survey_select".
+ */
+export interface SurveySelect<T extends boolean = true> {
+  title?: T;
+  questions?:
+    | T
+    | {
+        questionId?: T;
+        type?: T;
+        text?: T;
+        options?:
+          | T
+          | {
+              optionId?: T;
+              text?: T;
+              id?: T;
+            };
+        condition?:
+          | T
+          | {
+              parentQuestionId?: T;
+              optionId?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

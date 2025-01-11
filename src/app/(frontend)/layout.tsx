@@ -1,7 +1,9 @@
 import "@/styles/globals.css";
-
+import { getPayload } from "payload";
+import config from "@/payload.config";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+import { getCachedGlobal } from "@/payload/utils/getGlobals";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
