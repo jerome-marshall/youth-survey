@@ -5,7 +5,7 @@ export const generateQuestionId: FieldHook<
   Survey,
   string | undefined,
   NonNullable<Survey["questions"]>[number]
-> = ({ data, siblingData, value }) => {
+> = ({ siblingData, value }) => {
   let qId = value;
 
   // const questions = data?.questions ?? [];
