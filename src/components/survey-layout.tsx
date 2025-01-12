@@ -49,14 +49,14 @@ export function SurveyLayout({
                   Question {currentQuestion} of {totalQuestions}
                 </span>
                 <span>
-                  {Math.round((currentQuestion / totalQuestions) * 100)}%
+                  {Math.round(((currentQuestion - 1) / totalQuestions) * 100)}%
                 </span>
               </div>
               <div className="h-1 w-full rounded-full bg-purple-100">
                 <div
                   className="h-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300 ease-in-out"
                   style={{
-                    width: `${(currentQuestion / totalQuestions) * 100}%`,
+                    width: `${((currentQuestion - 1) / totalQuestions) * 100}%`,
                   }}
                 />
               </div>

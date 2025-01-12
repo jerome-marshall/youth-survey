@@ -1,5 +1,7 @@
 import { type Survey } from "@/payload-types";
 import type { FieldHook } from "payload";
+import type { GlobalAfterChangeHook } from "payload";
+import { revalidateTag } from "next/cache";
 
 export const generateQuestionId: FieldHook<
   Survey,
@@ -35,4 +37,17 @@ export const generateOptionId: FieldHook<
   );
   console.log("🚀 ~ question:", question, value);
   return value;
+};
+
+export const revalidateSurvey: GlobalAfterChangeHook = ({
+  doc,
+  req: { payload, context },
+}) => {
+  if (!context.disableRevalidate) {
+    payload.logger.info(`Revalidating survey`);
+
+    revalidateTag("global_survey");
+  }
+
+  return doc as Survey;
 };

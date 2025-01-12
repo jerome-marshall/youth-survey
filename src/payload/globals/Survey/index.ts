@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { generateQuestionId } from "@/payload/hooks/questionHooks";
+import {
+  generateQuestionId,
+  revalidateSurvey,
+} from "@/payload/hooks/questionHooks";
 import { type Field, type GlobalConfig } from "payload";
 
 const optionFields: Field = {
@@ -38,6 +41,9 @@ export const Survey: GlobalConfig = {
   slug: "survey",
   access: {
     read: () => true,
+  },
+  hooks: {
+    afterChange: [revalidateSurvey],
   },
   fields: [
     {
