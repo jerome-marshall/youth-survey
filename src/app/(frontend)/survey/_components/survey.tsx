@@ -5,8 +5,19 @@ import { SurveyLayout } from "@/components/survey-layout";
 import { Button } from "@/components/ui/button";
 import { type Survey } from "@/payload-types";
 import { useSurveyQuestions } from "@/hooks/useSurveyQuestions";
+import { UserInfoForm } from "./user-info-form";
+import { useState } from "react";
+
+export interface UserInfo {
+  age: string;
+  gender: string;
+  profession: string;
+  section: string;
+  state: string;
+}
 
 export default function Survey({ survey }: { survey: Survey }) {
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const {
     questions,
     currentQuestion,
@@ -21,6 +32,18 @@ export default function Survey({ survey }: { survey: Survey }) {
 
   if (!questions) return null;
 
+  if (!userInfo) {
+    return (
+      <SurveyLayout
+        title="User Information"
+        currentQuestion={0}
+        totalQuestions={questions.length + 1}
+      >
+        <UserInfoForm onSubmit={setUserInfo} />
+      </SurveyLayout>
+    );
+  }
+
   if (isCompleted) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
@@ -30,7 +53,7 @@ export default function Survey({ survey }: { survey: Survey }) {
             Thank you for participating in our survey!
           </p>
           <pre className="max-w-lg overflow-auto rounded bg-gray-100 p-4">
-            {JSON.stringify(answers, null, 2)}
+            {JSON.stringify({ userInfo, answers }, null, 2)}
           </pre>
         </div>
       </div>
