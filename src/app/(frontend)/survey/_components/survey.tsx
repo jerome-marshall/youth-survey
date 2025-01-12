@@ -16,7 +16,10 @@ export interface UserInfo {
   state: string;
 }
 
+type Step = "intro" | "userInfo" | "questions";
+
 export default function Survey({ survey }: { survey: Survey }) {
+  const [step, setStep] = useState<Step>("intro");
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const {
     questions,
@@ -31,18 +34,6 @@ export default function Survey({ survey }: { survey: Survey }) {
   } = useSurveyQuestions(survey);
 
   if (!questions) return null;
-
-  if (!userInfo) {
-    return (
-      <SurveyLayout
-        title="User Information"
-        currentQuestion={0}
-        totalQuestions={questions.length + 1}
-      >
-        <UserInfoForm onSubmit={setUserInfo} />
-      </SurveyLayout>
-    );
-  }
 
   if (isCompleted) {
     return (
@@ -60,6 +51,61 @@ export default function Survey({ survey }: { survey: Survey }) {
     );
   }
 
+  if (step === "intro") {
+    return (
+      <SurveyLayout title="Welcome" hideProgress>
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-purple-600 sm:text-xl">
+              Hi there! 👋
+            </h2>
+            <p className="text-sm text-gray-600 sm:text-base">
+              We&apos;d love to hear your thoughts on faith and the Bible in
+              this quick, anonymous survey! 😊
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-purple-50 p-3 ring-1 ring-purple-200 sm:p-4">
+            <h3 className="mb-2 text-sm font-medium text-purple-700 sm:text-base">
+              Quick Tip
+            </h3>
+            <p className="text-xs text-purple-600 sm:text-sm">
+              The best answers are honest ones! Just share what&apos;s true for
+              you right now - there&apos;s no right or wrong here. Think of it
+              like chatting with a friend about your real thoughts and
+              experiences.
+            </p>
+          </div>
+
+          <Button
+            onClick={() => setStep("userInfo")}
+            className="mt-6 w-full bg-gradient-to-r from-purple-600 to-pink-600 py-2 text-sm text-white shadow-md hover:from-purple-700 hover:to-pink-700 sm:mt-10 sm:py-3 sm:text-base"
+          >
+            Begin Survey
+          </Button>
+        </div>
+      </SurveyLayout>
+    );
+  }
+
+  if (step === "userInfo") {
+    return (
+      <SurveyLayout
+        title="User Information"
+        hideProgress
+        onBack={() => setStep("intro")}
+      >
+        <UserInfoForm
+          onSubmit={(data) => {
+            setUserInfo(data);
+            setStep("questions");
+          }}
+          initialData={userInfo ?? undefined}
+        />
+      </SurveyLayout>
+    );
+  }
+
   if (!currentQuestion) {
     return null;
   }
@@ -69,7 +115,9 @@ export default function Survey({ survey }: { survey: Survey }) {
       title="Youth Survey"
       currentQuestion={currentQuestionIndex + 1}
       totalQuestions={questions.length}
-      onBack={handleBack}
+      onBack={
+        currentQuestionIndex === 0 ? () => setStep("userInfo") : handleBack
+      }
     >
       <Question
         question={currentQuestion}

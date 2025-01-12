@@ -44,17 +44,18 @@ const formSchema = z.object({
 
 interface UserInfoFormProps {
   onSubmit: (data: UserInfo) => void;
+  initialData?: UserInfo;
 }
 
-export function UserInfoForm({ onSubmit }: UserInfoFormProps) {
+export function UserInfoForm({ onSubmit, initialData }: UserInfoFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      age: "",
-      gender: "",
-      profession: "",
-      section: "",
-      state: "",
+      age: initialData?.age ?? "",
+      gender: initialData?.gender ?? "",
+      profession: initialData?.profession ?? "",
+      section: initialData?.section ?? "",
+      state: initialData?.state ?? "",
     },
   });
 
