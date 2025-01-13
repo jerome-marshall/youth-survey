@@ -159,6 +159,20 @@ export function Question({
           />
         </div>
       )}
+      {question.type === "ranking" && (
+        <div className="space-y-3">
+          {question.options?.map((option, index) => (
+            <QuestionOption
+              key={option.id}
+              option={option}
+              index={index}
+              selectedOptions={selectedOptions}
+              handleOptionChange={handleOptionChange}
+              type={question.type}
+            />
+          ))}
+        </div>
+      )}
       {question.type === "text" && (
         <div className="space-y-3">
           <Textarea

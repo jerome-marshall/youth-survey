@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { RadioGroupItem } from "@/components/ui/radio-group";
 import { type QuestionType } from "types/survey";
+import { cn } from "@/lib/utils";
 
 interface QuestionOptionProps {
   option: {
@@ -23,11 +24,14 @@ export function QuestionOption({
   selectedOptions,
   type = "single",
   handleOptionChange,
-  onOptionChange,
 }: QuestionOptionProps) {
   if (!option.optionId) return null;
 
   const optionId = option.optionId.toString();
+
+  const rankingNumber =
+    type === "ranking" ? selectedOptions.indexOf(optionId) + 1 : null;
+  const isRanked = rankingNumber !== null && rankingNumber !== 0;
 
   return (
     <motion.div
@@ -68,6 +72,31 @@ export function QuestionOption({
             onCheckedChange={() => handleOptionChange(optionId)}
             className="border-purple-300 text-purple-600"
           />
+        )}
+        {type === "ranking" && (
+          <div className="flex items-center space-x-3">
+            <Checkbox
+              id={optionId}
+              checked={selectedOptions.includes(optionId)}
+              onCheckedChange={() => handleOptionChange(optionId)}
+              className="border-purple-300 text-purple-600"
+              hidden={true}
+            />
+            <div
+              className={cn(
+                "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
+                isRanked
+                  ? "bg-purple-500 text-white"
+                  : "bg-purple-100 text-purple-600",
+              )}
+            >
+              {!isRanked ? (
+                <span className="relative -top-[1px]">+</span>
+              ) : (
+                rankingNumber
+              )}
+            </div>
+          </div>
         )}
         <span className="text-sm font-medium text-gray-700">{option.text}</span>
       </Label>
