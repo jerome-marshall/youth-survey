@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { type Survey } from "@/payload-types";
 import { flattenQuestions, isConditionalQuestion } from "@/utils/question";
-import { type SurveyQuestionWithSection } from "@/payload/types";
 
 export function useSurveyQuestions(survey: Survey) {
   const questions = flattenQuestions(survey);
