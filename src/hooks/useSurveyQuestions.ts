@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { addResponse, removeResponse } from "@/app/(frontend)/survey/actions";
+import { CUSTOM_TEXT } from "@/components/question";
 import { type Survey } from "@/payload-types";
+import { SurveyOption } from "@/payload/types";
 import { flattenQuestions, isConditionalQuestion } from "@/utils/question";
+import { useState } from "react";
 
 export function useSurveyQuestions(survey: Survey) {
   const questions = flattenQuestions(survey);
@@ -11,6 +14,7 @@ export function useSurveyQuestions(survey: Survey) {
   );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [surveyResponseID, setSurveyResponseID] = useState<number | null>(null);
 
   const currentQuestion = questions?.[currentQuestionIndex];
 
@@ -44,6 +48,15 @@ export function useSurveyQuestions(survey: Survey) {
       skippedQuestions?.forEach((id) => {
         if (isConditionalQuestion(id)) {
           delete newAnswers[id];
+
+          if (!surveyResponseID) return;
+          removeResponse(surveyResponseID, id)
+            .then(() => {
+              console.log("🚀 ~ removeResponse");
+            })
+            .catch((error) => {
+              console.error("🚀 ~ removeResponse ~ error:", error);
+            });
         }
       });
       return newAnswers;
@@ -99,6 +112,7 @@ export function useSurveyQuestions(survey: Survey) {
     }
 
     // Update index and load next question's answers
+    let hasCompleted = false;
     if (nextIndex < questions.length) {
       const nextQuestion = questions[nextIndex];
       if (!nextQuestion) return;
@@ -112,8 +126,47 @@ export function useSurveyQuestions(survey: Survey) {
       );
       setCurrentQuestionIndex(nextIndex);
     } else {
-      setIsCompleted(true);
+      hasCompleted = true;
+      setIsCompleted(hasCompleted);
     }
+
+    // transform selected options to the format required by the backend
+    const selectedOptionsData = selectedOptions.map((option) => {
+      if (option === CUSTOM_TEXT) {
+        return {
+          optionId: option,
+          optionText: customAnswers[currentQuestion.questionId] ?? "",
+        };
+      }
+
+      const options = currentQuestion.options;
+      const optionData = options?.find(
+        (opt) => opt.optionId === Number(option),
+      );
+      return {
+        optionId: option,
+        optionText: optionData?.text ?? "",
+      };
+    });
+
+    // Add response to survey response
+    if (!surveyResponseID) return;
+    addResponse(
+      surveyResponseID,
+      {
+        questionId: currentQuestion.questionId,
+        questionText: currentQuestion.text,
+        type: currentQuestion.type,
+        selectedOptions: selectedOptionsData,
+      },
+      hasCompleted,
+    )
+      .then(() => {
+        console.log("🚀 ~ added response");
+      })
+      .catch((error) => {
+        console.error("🚀 ~ addResponse ~ error:", error);
+      });
   };
 
   const handleOptionChange = (optionId: string) => {
@@ -148,5 +201,7 @@ export function useSurveyQuestions(survey: Survey) {
     handleBack,
     handleNext,
     handleOptionChange,
+    surveyResponseID,
+    setSurveyResponseID,
   };
 }

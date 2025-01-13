@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import { env } from "./env";
 import { Users } from "./payload/collections/Users";
 import { Survey } from "./payload/globals/Survey";
+import { SurveyResponses } from "./payload/collections/SurveyResponses";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -44,7 +45,7 @@ const config = buildConfig({
   editor: lexicalEditor(),
 
   // Define and configure your collections in this array
-  collections: [Users],
+  collections: [Users, SurveyResponses],
   globals: [Survey],
 
   // Your Payload secret - should be a complex and secure string, unguessable

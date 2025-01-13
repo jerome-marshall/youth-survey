@@ -17,7 +17,7 @@ interface QuestionProps {
   setCustomAnswers: (answers: Record<string, string>) => void;
 }
 
-const CUSTOM_TEXT = "custom_text";
+export const CUSTOM_TEXT = "custom_text";
 const CustomTextOption = React.memo(
   ({
     question,

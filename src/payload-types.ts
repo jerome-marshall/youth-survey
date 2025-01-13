@@ -12,6 +12,7 @@ export interface Config {
   };
   collections: {
     users: User;
+    'survey-responses': SurveyResponse;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -19,6 +20,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    'survey-responses': SurveyResponsesSelect<false> | SurveyResponsesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -79,14 +81,52 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "survey-responses".
+ */
+export interface SurveyResponse {
+  id: number;
+  userInfo?: {
+    age?: string | null;
+    gender?: string | null;
+    profession?: string | null;
+    section?: string | null;
+    state?: string | null;
+  };
+  responses?:
+    | {
+        questionId: string;
+        questionText: string;
+        type: 'single' | 'multiple' | 'ranking' | 'text';
+        selectedOptions?:
+          | {
+              optionId: string;
+              optionText: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  lastCompletedQuestion?: string | null;
+  hasCompleted?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: number;
-  document?: {
-    relationTo: 'users';
-    value: number | User;
-  } | null;
+  document?:
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'survey-responses';
+        value: number | SurveyResponse;
+      } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
@@ -144,6 +184,40 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "survey-responses_select".
+ */
+export interface SurveyResponsesSelect<T extends boolean = true> {
+  userInfo?:
+    | T
+    | {
+        age?: T;
+        gender?: T;
+        profession?: T;
+        section?: T;
+        state?: T;
+      };
+  responses?:
+    | T
+    | {
+        questionId?: T;
+        questionText?: T;
+        type?: T;
+        selectedOptions?:
+          | T
+          | {
+              optionId?: T;
+              optionText?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  lastCompletedQuestion?: T;
+  hasCompleted?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

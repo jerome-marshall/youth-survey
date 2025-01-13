@@ -7,6 +7,7 @@ import { type Survey } from "@/payload-types";
 import { useSurveyQuestions } from "@/hooks/useSurveyQuestions";
 import { UserInfoForm } from "./user-info-form";
 import { useState } from "react";
+import { createSurvey } from "../actions";
 
 export interface UserInfo {
   age: string;
@@ -20,13 +21,7 @@ type Step = "intro" | "userInfo" | "questions";
 
 export default function Survey({ survey }: { survey: Survey }) {
   const [step, setStep] = useState<Step>("intro");
-  const [userInfo, setUserInfo] = useState<UserInfo | null>({
-    age: "12",
-    gender: "male",
-    profession: "Test",
-    section: "testt",
-    state: "Karnataka",
-  });
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const {
     questions,
     currentQuestion,
@@ -39,6 +34,7 @@ export default function Survey({ survey }: { survey: Survey }) {
     handleBack,
     handleNext,
     handleOptionChange,
+    setSurveyResponseID,
   } = useSurveyQuestions(survey);
 
   const hasSelectedOptions = selectedOptions.length > 0;
@@ -115,6 +111,15 @@ export default function Survey({ survey }: { survey: Survey }) {
           onSubmit={(data) => {
             setUserInfo(data);
             setStep("questions");
+
+            createSurvey(data)
+              .then((id) => {
+                setSurveyResponseID(id);
+                console.log("🚀 ~ user info added");
+              })
+              .catch((error) => {
+                console.log("🚀 ~ createSurvey ~ error:", error);
+              });
           }}
           initialData={userInfo ?? undefined}
         />

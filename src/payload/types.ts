@@ -1,4 +1,4 @@
-import { type Survey } from "@/payload-types";
+import { type SurveyResponse, type Survey } from "@/payload-types";
 import { type Color } from "./utils/colors";
 
 type Maybe<T> = T | null | undefined;
@@ -12,3 +12,8 @@ export type SurveyQuestionWithSection = SurveyQuestion & {
   sectionColor: Maybe<Color>;
   sectionId: Maybe<string>;
 };
+
+export type SurveyResponseUserInfo = NonNullable<SurveyResponse["userInfo"]>;
+export type SurveyResponseQuestionResponse = NonNullable<
+  SurveyResponse["responses"]
+>[number];
