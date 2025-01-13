@@ -5,12 +5,15 @@ import {
   revalidateSurvey,
 } from "@/payload/hooks/questionHooks";
 import { colorOptions } from "@/payload/utils/colors";
+import {
+  questionTypes,
+  questionTypesOptions,
+} from "@/payload/utils/question-type";
 import { type Field, type GlobalConfig } from "payload";
 
 const optionFields: Field = {
   name: "options",
   type: "array",
-  required: true,
   admin: {
     components: {
       RowLabel: "@/payload/components/OptionRowLabel",
@@ -99,13 +102,8 @@ export const Survey: GlobalConfig = {
                   name: "type",
                   type: "select",
                   required: true,
-                  defaultValue: "single",
-                  options: [
-                    { label: "Single Choice", value: "single" },
-                    { label: "Multiple Choice", value: "multiple" },
-                    { label: "Ranking", value: "ranking" },
-                    { label: "Text", value: "text" },
-                  ],
+                  defaultValue: questionTypes[0],
+                  options: questionTypesOptions,
                 },
                 {
                   name: "customText",
@@ -117,7 +115,10 @@ export const Survey: GlobalConfig = {
                   ],
                   admin: {
                     condition: (_, siblingData) => {
-                      if (siblingData.type === "multiple") {
+                      if (
+                        siblingData.type === "single" ||
+                        siblingData.type === "multiple"
+                      ) {
                         return true;
                       } else {
                         return false;

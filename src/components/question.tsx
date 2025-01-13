@@ -1,103 +1,164 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { type Survey } from "@/payload-types";
+import { QuestionOption } from "@/components/question-option";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { type SurveyQuestionWithSection } from "@/payload/types";
+import { hasCustomText } from "@/utils/question";
 import { motion } from "framer-motion";
-import { type Question } from "types/survey";
+import React, { useEffect, useState } from "react";
+import { Textarea } from "./ui/textarea";
+import { type QuestionType } from "@/payload/utils/question-type";
 
 interface QuestionProps {
   question: SurveyQuestionWithSection;
   selectedOptions: string[];
   handleOptionChange: (optionId: string) => void;
+  customAnswers: Record<string, string>;
+  setCustomAnswers: (answers: Record<string, string>) => void;
 }
+
+const CUSTOM_TEXT = "custom_text";
+const CustomTextOption = React.memo(
+  ({
+    question,
+    selectedOptions,
+    handleOptionChange,
+    customAnswers,
+    setCustomAnswers,
+  }: {
+    question: SurveyQuestionWithSection;
+    selectedOptions: string[];
+    handleOptionChange: (optionId: string) => void;
+    type: QuestionType;
+    customAnswers: Record<string, string>;
+    setCustomAnswers: (answers: Record<string, string>) => void;
+  }) => {
+    const [showInput, setShowInput] = useState(false);
+
+    useEffect(() => {
+      setShowInput(selectedOptions.includes(CUSTOM_TEXT));
+    }, [selectedOptions]);
+
+    if (!hasCustomText(question) || !question.options) return null;
+
+    return (
+      <>
+        <QuestionOption
+          option={{
+            id: question.id + "_custom_text",
+            text: "Other",
+            optionId: CUSTOM_TEXT,
+          }}
+          index={question.options.length}
+          selectedOptions={selectedOptions}
+          handleOptionChange={handleOptionChange}
+          type={question.type}
+        />
+        {showInput && (
+          <Textarea
+            value={customAnswers[question.questionId] ?? ""}
+            onChange={(e) =>
+              setCustomAnswers({
+                ...customAnswers,
+                [question.questionId]: e.target.value,
+              })
+            }
+            placeholder="Write your answer here"
+          />
+        )}
+      </>
+    );
+  },
+);
+
+CustomTextOption.displayName = "CustomTextOption";
 
 export function Question({
   question,
   selectedOptions,
   handleOptionChange,
+  customAnswers,
+  setCustomAnswers,
 }: QuestionProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      layout
+      layoutRoot
       className="space-y-6"
     >
       <div className="space-y-2">
         <h2 className="text-xl font-medium leading-tight text-gray-900">
           {question.text}
         </h2>
-        {/* {question.subText && (
-          <p className="text-sm text-gray-500">{question.subText}</p>
-        )} */}
       </div>
-      {question.type === "single" ? (
+      {question.type === "single" && (
         <RadioGroup
           value={selectedOptions[0]}
           onValueChange={(value) => handleOptionChange(value)}
           className="space-y-3"
         >
-          {question.options.map((option, index) => (
-            <motion.div
+          {question.options?.map((option, index) => (
+            <QuestionOption
               key={option.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <Label
-                htmlFor={option.optionId.toString()}
-                className={`flex cursor-pointer items-center space-x-3 rounded-xl border-2 p-4 transition-all duration-200 ease-in-out ${
-                  selectedOptions.includes(option.optionId.toString())
-                    ? "border-purple-500 bg-purple-50"
-                    : "border-gray-200 hover:border-purple-200 hover:bg-purple-50/50"
-                }`}
-              >
-                <RadioGroupItem
-                  value={option.optionId.toString()}
-                  id={option.optionId.toString()}
-                  className="border-purple-300 text-purple-600"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  {option.text}
-                </span>
-              </Label>
-            </motion.div>
+              option={option}
+              index={index}
+              selectedOptions={selectedOptions}
+              type={question.type}
+              handleOptionChange={handleOptionChange}
+            />
           ))}
+          <CustomTextOption
+            question={question}
+            selectedOptions={selectedOptions}
+            handleOptionChange={handleOptionChange}
+            type={question.type}
+            customAnswers={customAnswers}
+            setCustomAnswers={setCustomAnswers}
+            key={question.id + "_custom_text"}
+          />
         </RadioGroup>
-      ) : (
+      )}
+      {question.type === "multiple" && (
         <div className="space-y-3">
-          {question.options.map((option, index) => (
-            <motion.div
+          {question.options?.map((option, index) => (
+            <QuestionOption
               key={option.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <Label
-                htmlFor={option.optionId.toString()}
-                className={`flex cursor-pointer items-center space-x-3 rounded-xl border-2 p-4 transition-all duration-200 ease-in-out ${
-                  selectedOptions.includes(option.optionId.toString())
-                    ? "border-purple-500 bg-purple-50"
-                    : "border-gray-200 hover:border-purple-200 hover:bg-purple-50/50"
-                }`}
-              >
-                <Checkbox
-                  id={option.optionId.toString()}
-                  checked={selectedOptions.includes(option.optionId.toString())}
-                  onCheckedChange={() =>
-                    handleOptionChange(option.optionId.toString())
-                  }
-                  className="border-purple-300 text-purple-600"
-                />
-                <span className="text-sm font-medium text-gray-700">
-                  {option.text}
-                </span>
-              </Label>
-            </motion.div>
+              option={option}
+              index={index}
+              selectedOptions={selectedOptions}
+              handleOptionChange={handleOptionChange}
+              type={question.type}
+            />
           ))}
+          <CustomTextOption
+            question={question}
+            selectedOptions={selectedOptions}
+            handleOptionChange={handleOptionChange}
+            type={question.type}
+            customAnswers={customAnswers}
+            setCustomAnswers={setCustomAnswers}
+            key={question.id + "_custom_text"}
+          />
+        </div>
+      )}
+      {question.type === "text" && (
+        <div className="space-y-3">
+          <Textarea
+            value={customAnswers[question.questionId] ?? ""}
+            onChange={(e) => {
+              setCustomAnswers({
+                ...customAnswers,
+                [question.questionId]: e.target.value,
+              });
+              if (!selectedOptions.includes(CUSTOM_TEXT)) {
+                handleOptionChange(CUSTOM_TEXT);
+              }
+            }}
+            placeholder="Write your answer here"
+          />
         </div>
       )}
     </motion.div>

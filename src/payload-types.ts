@@ -191,11 +191,13 @@ export interface Survey {
       type: 'single' | 'multiple' | 'ranking' | 'text';
       customText?: ('true' | 'false') | null;
       text: string;
-      options: {
-        optionId: number;
-        text: string;
-        id?: string | null;
-      }[];
+      options?:
+        | {
+            optionId: number;
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
       condition?: {
         parentQuestionId?: string | null;
         optionId?: number | null;

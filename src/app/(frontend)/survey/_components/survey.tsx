@@ -34,10 +34,14 @@ export default function Survey({ survey }: { survey: Survey }) {
     isCompleted,
     answers,
     selectedOptions,
+    customAnswers,
+    setCustomAnswers,
     handleBack,
     handleNext,
     handleOptionChange,
   } = useSurveyQuestions(survey);
+
+  const hasSelectedOptions = selectedOptions.length > 0;
 
   if (!questions) return null;
 
@@ -50,7 +54,7 @@ export default function Survey({ survey }: { survey: Survey }) {
             Thank you for participating in our survey!
           </p>
           <pre className="max-w-lg overflow-auto rounded bg-gray-100 p-4">
-            {JSON.stringify({ userInfo, answers }, null, 2)}
+            {JSON.stringify({ userInfo, answers, customAnswers }, null, 2)}
           </pre>
         </div>
       </div>
@@ -129,11 +133,14 @@ export default function Survey({ survey }: { survey: Survey }) {
         question={currentQuestion}
         selectedOptions={selectedOptions}
         handleOptionChange={handleOptionChange}
+        customAnswers={customAnswers}
+        setCustomAnswers={setCustomAnswers}
       />
 
       <Button
         onClick={handleNext}
         className="mt-10 w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md hover:from-purple-700 hover:to-pink-700"
+        disabled={!hasSelectedOptions}
       >
         Next
       </Button>

@@ -14,6 +14,9 @@ export function useSurveyQuestions(survey: Survey) {
   ) satisfies SurveyQuestionWithSection[];
   const [isCompleted, setIsCompleted] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
+    {},
+  );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
@@ -148,6 +151,8 @@ export function useSurveyQuestions(survey: Survey) {
     isCompleted,
     answers,
     selectedOptions,
+    customAnswers,
+    setCustomAnswers,
     handleBack,
     handleNext,
     handleOptionChange,
