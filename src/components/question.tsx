@@ -3,9 +3,9 @@
 import { QuestionOption } from "@/components/question-option";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { type SurveyQuestionWithSection } from "@/payload/types";
-import { hasCustomText } from "@/utils/question";
+import { hasCustomText, questionPostfix } from "@/utils/question";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { type QuestionType } from "@/payload/utils/question-type";
 
@@ -34,10 +34,21 @@ const CustomTextOption = React.memo(
     setCustomAnswers: (answers: Record<string, string>) => void;
   }) => {
     const [showInput, setShowInput] = useState(false);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
-      setShowInput(selectedOptions.includes(CUSTOM_TEXT));
-    }, [selectedOptions]);
+      if (selectedOptions.includes(CUSTOM_TEXT)) {
+        setShowInput(true);
+        // Only focus when transitioning from hidden to shown
+        if (!showInput) {
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 100);
+        }
+      } else {
+        setShowInput(false);
+      }
+    }, [selectedOptions, showInput]);
 
     if (!hasCustomText(question) || !question.options) return null;
 
@@ -57,6 +68,7 @@ const CustomTextOption = React.memo(
         {showInput && (
           <Textarea
             value={customAnswers[question.questionId] ?? ""}
+            ref={inputRef}
             onChange={(e) =>
               setCustomAnswers({
                 ...customAnswers,
@@ -80,6 +92,8 @@ export function Question({
   customAnswers,
   setCustomAnswers,
 }: QuestionProps) {
+  const postfix = questionPostfix(question);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -90,8 +104,9 @@ export function Question({
       className="space-y-6"
     >
       <div className="space-y-2">
-        <h2 className="text-xl font-medium leading-tight text-gray-900">
+        <h2 className="grid gap-1 text-xl font-medium leading-tight text-gray-900">
           {question.text}
+          <span className="text-sm text-gray-500">{postfix}</span>
         </h2>
       </div>
       {question.type === "single" && (

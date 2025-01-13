@@ -7,3 +7,18 @@ export const isConditionalQuestion = (questionId: string) =>
 
 export const hasCustomText = (question: SurveyQuestion) =>
   question.customText === "true";
+
+export const questionPostfix = (question: SurveyQuestion) => {
+  let postfix = "";
+
+  switch (question.type) {
+    case "multiple":
+      postfix = "Select all that apply";
+      break;
+    case "ranking":
+      postfix = "Rank the following options";
+      break;
+  }
+
+  return postfix;
+};
