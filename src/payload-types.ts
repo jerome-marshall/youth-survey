@@ -183,24 +183,27 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Survey {
   id: number;
-  title?: string | null;
-  questions?:
-    | {
-        questionId: string;
-        type: 'single' | 'multiple' | 'ranking' | 'text';
+  sections: {
+    title?: string | null;
+    themeColor?: ('cyan' | 'orange' | 'red' | 'purple' | 'blue') | null;
+    questions: {
+      questionId: string;
+      type: 'single' | 'multiple' | 'ranking' | 'text';
+      customText?: ('true' | 'false') | null;
+      text: string;
+      options: {
+        optionId: number;
         text: string;
-        options: {
-          optionId: number;
-          text: string;
-          id?: string | null;
-        }[];
-        condition?: {
-          parentQuestionId?: string | null;
-          optionId?: number | null;
-        };
         id?: string | null;
-      }[]
-    | null;
+      }[];
+      condition?: {
+        parentQuestionId?: string | null;
+        optionId?: number | null;
+      };
+      id?: string | null;
+    }[];
+    id?: string | null;
+  }[];
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -209,25 +212,32 @@ export interface Survey {
  * via the `definition` "survey_select".
  */
 export interface SurveySelect<T extends boolean = true> {
-  title?: T;
-  questions?:
+  sections?:
     | T
     | {
-        questionId?: T;
-        type?: T;
-        text?: T;
-        options?:
+        title?: T;
+        themeColor?: T;
+        questions?:
           | T
           | {
-              optionId?: T;
+              questionId?: T;
+              type?: T;
+              customText?: T;
               text?: T;
+              options?:
+                | T
+                | {
+                    optionId?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              condition?:
+                | T
+                | {
+                    parentQuestionId?: T;
+                    optionId?: T;
+                  };
               id?: T;
-            };
-        condition?:
-          | T
-          | {
-              parentQuestionId?: T;
-              optionId?: T;
             };
         id?: T;
       };

@@ -4,6 +4,7 @@ import {
   generateQuestionId,
   revalidateSurvey,
 } from "@/payload/hooks/questionHooks";
+import { colorOptions } from "@/payload/utils/colors";
 import { type Field, type GlobalConfig } from "payload";
 
 const optionFields: Field = {
@@ -47,15 +48,12 @@ export const Survey: GlobalConfig = {
   },
   fields: [
     {
-      name: "title",
-      type: "text",
-    },
-    {
-      name: "questions",
       type: "array",
+      name: "sections",
+      required: true,
       admin: {
         components: {
-          RowLabel: "@/payload/components/QuestionRowLabel",
+          RowLabel: "@/payload/components/SectionRowLabel",
         },
       },
       fields: [
@@ -63,49 +61,95 @@ export const Survey: GlobalConfig = {
           type: "row",
           fields: [
             {
-              name: "questionId",
+              name: "title",
               type: "text",
-              required: true,
-              hooks: {
-                beforeChange: [generateQuestionId],
-              },
             },
             {
-              name: "type",
+              name: "themeColor",
               type: "select",
-              required: true,
-              defaultValue: "single",
-              options: [
-                { label: "Single Choice", value: "single" },
-                { label: "Multiple Choice", value: "multiple" },
-                { label: "Ranking", value: "ranking" },
-                { label: "Text", value: "text" },
-              ],
+              options: colorOptions,
             },
           ],
         },
-
         {
-          name: "text",
-          type: "text",
+          name: "questions",
+          type: "array",
           required: true,
-        },
-
-        optionFields,
-        {
-          name: "condition",
-          type: "group",
+          admin: {
+            components: {
+              RowLabel: "@/payload/components/QuestionRowLabel",
+            },
+          },
           fields: [
             {
               type: "row",
               fields: [
                 {
-                  name: "parentQuestionId",
+                  name: "questionId",
                   type: "text",
+                  required: true,
+                  hooks: {
+                    beforeChange: [generateQuestionId],
+                  },
+                  admin: {
+                    width: "20%",
+                  },
                 },
                 {
-                  name: "optionId",
-                  type: "number",
+                  name: "type",
+                  type: "select",
+                  required: true,
+                  defaultValue: "single",
+                  options: [
+                    { label: "Single Choice", value: "single" },
+                    { label: "Multiple Choice", value: "multiple" },
+                    { label: "Ranking", value: "ranking" },
+                    { label: "Text", value: "text" },
+                  ],
+                },
+                {
+                  name: "customText",
+                  type: "select",
+                  defaultValue: "false",
+                  options: [
+                    { label: "Yes", value: "true" },
+                    { label: "No", value: "false" },
+                  ],
+                  admin: {
+                    condition: (_, siblingData) => {
+                      if (siblingData.type === "multiple") {
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              name: "text",
+              type: "text",
+              required: true,
+            },
+
+            optionFields,
+            {
+              name: "condition",
+              type: "group",
+              fields: [
+                {
+                  type: "row",
+                  fields: [
+                    {
+                      name: "parentQuestionId",
+                      type: "text",
+                    },
+                    {
+                      name: "optionId",
+                      type: "number",
+                    },
+                  ],
                 },
               ],
             },

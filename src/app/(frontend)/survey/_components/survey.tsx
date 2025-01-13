@@ -20,7 +20,13 @@ type Step = "intro" | "userInfo" | "questions";
 
 export default function Survey({ survey }: { survey: Survey }) {
   const [step, setStep] = useState<Step>("intro");
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>({
+    age: "12",
+    gender: "male",
+    profession: "Test",
+    section: "testt",
+    state: "Karnataka",
+  });
   const {
     questions,
     currentQuestion,
@@ -112,7 +118,7 @@ export default function Survey({ survey }: { survey: Survey }) {
 
   return (
     <SurveyLayout
-      title="Youth Survey"
+      title={currentQuestion.sectionTitle ?? "Youth Survey"}
       currentQuestion={currentQuestionIndex + 1}
       totalQuestions={questions.length}
       onBack={

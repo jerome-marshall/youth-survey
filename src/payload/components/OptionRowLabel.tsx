@@ -1,13 +1,10 @@
 "use client";
 
 import { useRowLabel } from "@payloadcms/ui";
-import { type Survey } from "@/payload-types";
+import { type SurveyOption } from "../types";
 
 export default function OptionRowLabel() {
-  const { data } =
-    useRowLabel<
-      NonNullable<NonNullable<Survey["questions"]>[number]["options"]>[number]
-    >();
+  const { data } = useRowLabel<SurveyOption>();
 
   const customLabel = `${data.text ?? "New Option"}`;
   const hasOptionId = data.optionId !== undefined;

@@ -4,11 +4,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { type Survey } from "@/payload-types";
+import { type SurveyQuestionWithSection } from "@/payload/types";
 import { motion } from "framer-motion";
 import { type Question } from "types/survey";
 
 interface QuestionProps {
-  question: NonNullable<Survey["questions"]>[number];
+  question: SurveyQuestionWithSection;
   selectedOptions: string[];
   handleOptionChange: (optionId: string) => void;
 }
