@@ -1,17 +1,10 @@
 import { useState } from "react";
 import { type Survey } from "@/payload-types";
-import { isConditionalQuestion } from "@/utils/question";
+import { flattenQuestions, isConditionalQuestion } from "@/utils/question";
 import { type SurveyQuestionWithSection } from "@/payload/types";
 
 export function useSurveyQuestions(survey: Survey) {
-  const questions = survey.sections.flatMap((section) =>
-    section.questions.map((question) => ({
-      ...question,
-      sectionId: section.id,
-      sectionTitle: section.title,
-      sectionColor: section.themeColor,
-    })),
-  ) satisfies SurveyQuestionWithSection[];
+  const questions = flattenQuestions(survey);
   const [isCompleted, setIsCompleted] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(

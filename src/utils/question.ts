@@ -1,4 +1,23 @@
-import { type SurveyQuestion } from "@/payload/types";
+import { type Survey } from "@/payload-types";
+import {
+  type SurveyQuestionWithSection,
+  type SurveyQuestion,
+} from "@/payload/types";
+
+export const flattenQuestions = (survey: Partial<Survey>) => {
+  const questions = survey.sections?.flatMap((section) =>
+    section.questions.map((question) => ({
+      ...question,
+      sectionId: section.id,
+      sectionTitle: section.title,
+      sectionColor: section.themeColor,
+    })),
+  );
+
+  if (!questions) return [];
+
+  return questions satisfies SurveyQuestionWithSection[];
+};
 
 export const CONDITIONAL_QUESTION_REGEX = /q\d+:\d+/;
 

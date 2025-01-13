@@ -2,11 +2,13 @@ import { type Survey } from "@/payload-types";
 import type { FieldHook } from "payload";
 import type { GlobalAfterChangeHook } from "payload";
 import { revalidateTag } from "next/cache";
+import { type SurveyOption, type SurveyQuestion } from "../types";
+import { flattenQuestions } from "@/utils/question";
 
 export const generateQuestionId: FieldHook<
   Survey,
   string | undefined,
-  NonNullable<Survey["questions"]>[number]
+  SurveyQuestion
 > = ({ siblingData, value }) => {
   let qId = value;
 
@@ -30,9 +32,12 @@ export const generateQuestionId: FieldHook<
 export const generateOptionId: FieldHook<
   Survey,
   number | undefined,
-  NonNullable<NonNullable<Survey["questions"]>[number]["options"]>[number]
+  SurveyOption
 > = ({ data, siblingData, value }) => {
-  const question = data?.questions?.find((q) =>
+  if (!data) return value;
+  const questions = flattenQuestions(data);
+
+  const question = questions?.find((q) =>
     q.options?.find((o) => o.id === siblingData.id),
   );
   console.log("🚀 ~ question:", question, value);
