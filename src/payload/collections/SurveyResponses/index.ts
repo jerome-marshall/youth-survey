@@ -15,73 +15,116 @@ export const SurveyResponses: CollectionConfig = {
       type: "group",
       fields: [
         {
-          name: "age",
-          type: "text",
-        },
-        {
-          name: "gender",
-          type: "text",
-        },
-        {
-          name: "profession",
-          type: "text",
-        },
-        {
-          name: "section",
-          type: "text",
-        },
-        {
-          name: "state",
-          type: "text",
-        },
-      ],
-    },
-    {
-      name: "responses",
-      type: "array",
-      fields: [
-        {
-          name: "questionId",
-          type: "text",
-          required: true,
-        },
-        {
-          name: "questionText",
-          type: "text",
-          required: true,
-        },
-        {
-          name: "type",
-          type: "select",
-          options: questionTypesOptions,
-          required: true,
-        },
-        {
-          name: "selectedOptions",
-          type: "array",
+          type: "row",
           fields: [
             {
-              name: "optionId",
+              name: "age",
               type: "text",
-              required: true,
             },
             {
-              name: "optionText",
+              name: "gender",
               type: "text",
-              required: true,
+            },
+            {
+              name: "profession",
+              type: "text",
+            },
+          ],
+        },
+        {
+          type: "row",
+          fields: [
+            {
+              name: "section",
+              type: "text",
+            },
+            {
+              name: "state",
+              type: "text",
             },
           ],
         },
       ],
     },
     {
-      name: "lastCompletedQuestion",
-      type: "text",
+      type: "row",
+      fields: [
+        {
+          name: "lastCompletedQuestion",
+          type: "text",
+        },
+        {
+          name: "hasCompleted",
+          type: "checkbox",
+          defaultValue: false,
+        },
+      ],
     },
     {
-      name: "hasCompleted",
-      type: "checkbox",
-      defaultValue: false,
+      name: "responses",
+      type: "array",
+      admin: {
+        components: {
+          RowLabel: "@/payload/components/ResponseQuestionRowLabel",
+        },
+      },
+      fields: [
+        {
+          type: "row",
+          fields: [
+            {
+              name: "questionId",
+              type: "text",
+              required: true,
+            },
+            {
+              name: "type",
+              type: "select",
+              options: questionTypesOptions,
+              required: true,
+            },
+            {
+              name: "area",
+              type: "text",
+            },
+          ],
+        },
+        {
+          name: "questionText",
+          type: "text",
+          required: true,
+        },
+
+        {
+          name: "selectedOptions",
+          type: "array",
+          admin: {
+            components: {
+              RowLabel: "@/payload/components/ResponseOptionRowLabel",
+            },
+          },
+          fields: [
+            {
+              type: "row",
+              fields: [
+                {
+                  name: "optionId",
+                  type: "text",
+                  required: true,
+                  admin: {
+                    width: "20%",
+                  },
+                },
+                {
+                  name: "optionText",
+                  type: "text",
+                  required: true,
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
   ],
   timestamps: true,

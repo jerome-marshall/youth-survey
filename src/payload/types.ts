@@ -17,3 +17,6 @@ export type SurveyResponseUserInfo = NonNullable<SurveyResponse["userInfo"]>;
 export type SurveyResponseQuestionResponse = NonNullable<
   SurveyResponse["responses"]
 >[number];
+export type SurveyResponseOptionResponse = NonNullable<
+  SurveyResponseQuestionResponse["selectedOptions"]
+>[number];

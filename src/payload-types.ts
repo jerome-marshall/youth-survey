@@ -92,11 +92,14 @@ export interface SurveyResponse {
     section?: string | null;
     state?: string | null;
   };
+  lastCompletedQuestion?: string | null;
+  hasCompleted?: boolean | null;
   responses?:
     | {
         questionId: string;
-        questionText: string;
         type: 'single' | 'multiple' | 'ranking' | 'text';
+        area?: string | null;
+        questionText: string;
         selectedOptions?:
           | {
               optionId: string;
@@ -107,8 +110,6 @@ export interface SurveyResponse {
         id?: string | null;
       }[]
     | null;
-  lastCompletedQuestion?: string | null;
-  hasCompleted?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -199,12 +200,15 @@ export interface SurveyResponsesSelect<T extends boolean = true> {
         section?: T;
         state?: T;
       };
+  lastCompletedQuestion?: T;
+  hasCompleted?: T;
   responses?:
     | T
     | {
         questionId?: T;
-        questionText?: T;
         type?: T;
+        area?: T;
+        questionText?: T;
         selectedOptions?:
           | T
           | {
@@ -214,8 +218,6 @@ export interface SurveyResponsesSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  lastCompletedQuestion?: T;
-  hasCompleted?: T;
   updatedAt?: T;
   createdAt?: T;
 }

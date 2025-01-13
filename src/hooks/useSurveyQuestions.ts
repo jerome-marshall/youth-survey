@@ -158,6 +158,7 @@ export function useSurveyQuestions(survey: Survey) {
         questionText: currentQuestion.text,
         type: currentQuestion.type,
         selectedOptions: selectedOptionsData,
+        area: currentQuestion.sectionTitle,
       },
       hasCompleted,
     )

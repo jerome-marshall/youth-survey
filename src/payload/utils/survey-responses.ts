@@ -44,10 +44,7 @@ export const updateSurveyAddResponse = async (
       responses: [
         ...(filteredResponses ?? []),
         {
-          questionId: data.questionId,
-          questionText: data.questionText,
-          type: data.type,
-          selectedOptions: data.selectedOptions,
+          ...data,
         },
       ],
       lastCompletedQuestion: data.questionId,
