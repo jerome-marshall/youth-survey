@@ -91,6 +91,8 @@ export interface SurveyResponse {
     profession?: string | null;
     section?: string | null;
     state?: string | null;
+    email?: string | null;
+    phone?: string | null;
   };
   lastCompletedQuestion?: string | null;
   hasCompleted?: boolean | null;
@@ -199,6 +201,8 @@ export interface SurveyResponsesSelect<T extends boolean = true> {
         profession?: T;
         section?: T;
         state?: T;
+        email?: T;
+        phone?: T;
       };
   lastCompletedQuestion?: T;
   hasCompleted?: T;

@@ -1,7 +1,4 @@
-import {
-  questionTypes,
-  questionTypesOptions,
-} from "@/payload/utils/question-type";
+import { questionTypesOptions } from "@/payload/utils/question-type";
 import type { CollectionConfig } from "payload";
 
 export const SurveyResponses: CollectionConfig = {
@@ -40,6 +37,19 @@ export const SurveyResponses: CollectionConfig = {
             },
             {
               name: "state",
+              type: "text",
+            },
+          ],
+        },
+        {
+          type: "row",
+          fields: [
+            {
+              name: "email",
+              type: "text",
+            },
+            {
+              name: "phone",
               type: "text",
             },
           ],

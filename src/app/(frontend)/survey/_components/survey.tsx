@@ -7,7 +7,8 @@ import { type Survey } from "@/payload-types";
 import { useSurveyQuestions } from "@/hooks/useSurveyQuestions";
 import { UserInfoForm } from "./user-info-form";
 import { useState } from "react";
-import { createSurvey } from "../actions";
+import { createSurvey, updateUserInfoAction } from "../actions";
+import { Input } from "@/components/ui/input";
 
 export interface UserInfo {
   age: string;
@@ -22,6 +23,8 @@ type Step = "intro" | "userInfo" | "questions";
 export default function Survey({ survey }: { survey: Survey }) {
   const [step, setStep] = useState<Step>("intro");
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [contactInfo, setContactInfo] = useState({ email: "", phone: "" });
   const {
     questions,
     currentQuestion,
@@ -35,6 +38,8 @@ export default function Survey({ survey }: { survey: Survey }) {
     handleNext,
     handleOptionChange,
     setSurveyResponseID,
+    surveyResponseID,
+    resetSurvey,
   } = useSurveyQuestions(survey);
 
   const hasSelectedOptions = selectedOptions.length > 0;
@@ -49,15 +54,96 @@ export default function Survey({ survey }: { survey: Survey }) {
 
   if (isCompleted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-        <div className="rounded-lg bg-white p-8 shadow-xl">
-          <h1 className="mb-4 text-3xl font-bold">Survey Completed</h1>
-          <p className="mb-4 text-lg">
-            Thank you for participating in our survey!
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4">
+        <div className="w-full max-w-lg rounded-lg bg-white p-4 shadow-xl sm:p-8">
+          <h1 className="mb-4 text-2xl font-bold text-purple-600 sm:text-3xl">
+            Thank You!
+          </h1>
+          <p className="mb-6 text-base text-gray-600 sm:text-lg">
+            We really appreciate you taking the time to share your thoughts with
+            us.
           </p>
-          <pre className="max-w-lg overflow-auto rounded bg-gray-100 p-4">
-            {JSON.stringify({ userInfo, answers, customAnswers }, null, 2)}
-          </pre>
+
+          {!contactSubmitted ? (
+            <div className="mb-6 space-y-4 sm:mb-8 sm:space-y-6">
+              <div className="rounded-xl bg-purple-50 p-3 ring-1 ring-purple-200 sm:p-4">
+                <h3 className="mb-2 text-base font-semibold text-purple-600 sm:text-lg">
+                  Stay Connected
+                </h3>
+                <p className="text-sm text-purple-600 sm:text-base">
+                  We have some exciting programs coming up. If you want to stay
+                  updated, please leave your phone number or email:
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+                  <div className="w-full">
+                    <Input
+                      type="email"
+                      placeholder="Email (optional)"
+                      value={contactInfo.email}
+                      onChange={(e) =>
+                        setContactInfo((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="w-full">
+                    <Input
+                      type="tel"
+                      placeholder="Phone number (optional)"
+                      value={contactInfo.phone}
+                      onChange={(e) =>
+                        setContactInfo((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+                <Button
+                  disabled={!contactInfo.email && !contactInfo.phone}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-2 text-white shadow-md hover:from-purple-700 hover:to-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => {
+                    setContactSubmitted(true);
+
+                    if (!surveyResponseID) return;
+                    updateUserInfoAction(surveyResponseID, contactInfo)
+                      .then(() => {
+                        console.log("🚀 ~ saved contact info");
+                      })
+                      .catch((error) => {
+                        console.log("🚀 ~ error saving contact info", error);
+                      });
+                  }}
+                >
+                  Keep Me Updated!
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <div className="rounded-xl bg-green-50 p-4 ring-1 ring-green-200">
+                <p className="text-sm text-green-600">
+                  Thanks for sharing your contact information! We&apos;ll keep
+                  you updated about our upcoming programs.
+                </p>
+              </div>
+              <Button
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-2 text-white shadow-md hover:from-purple-700 hover:to-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => {
+                  resetSurvey();
+                  setStep("intro");
+                }}
+              >
+                Start Over
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     );

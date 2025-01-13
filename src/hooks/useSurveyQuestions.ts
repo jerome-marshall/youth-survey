@@ -1,7 +1,9 @@
-import { addResponse, removeResponse } from "@/app/(frontend)/survey/actions";
+import {
+  addResponseAction,
+  removeResponseAction,
+} from "@/app/(frontend)/survey/actions";
 import { CUSTOM_TEXT } from "@/components/question";
 import { type Survey } from "@/payload-types";
-import { SurveyOption } from "@/payload/types";
 import { flattenQuestions, isConditionalQuestion } from "@/utils/question";
 import { useState } from "react";
 
@@ -50,7 +52,7 @@ export function useSurveyQuestions(survey: Survey) {
           delete newAnswers[id];
 
           if (!surveyResponseID) return;
-          removeResponse(surveyResponseID, id)
+          removeResponseAction(surveyResponseID, id)
             .then(() => {
               console.log("🚀 ~ removeResponse");
             })
@@ -64,6 +66,10 @@ export function useSurveyQuestions(survey: Survey) {
 
     // Update index
     setCurrentQuestionIndex(prevIndex);
+
+    setTimeout(() => {
+      window?.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
   };
 
   const handleNext = () => {
@@ -139,6 +145,10 @@ export function useSurveyQuestions(survey: Survey) {
         };
       }
 
+      setTimeout(() => {
+        window?.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+
       const options = currentQuestion.options;
       const optionData = options?.find(
         (opt) => opt.optionId === Number(option),
@@ -151,7 +161,7 @@ export function useSurveyQuestions(survey: Survey) {
 
     // Add response to survey response
     if (!surveyResponseID) return;
-    addResponse(
+    addResponseAction(
       surveyResponseID,
       {
         questionId: currentQuestion.questionId,
@@ -190,6 +200,15 @@ export function useSurveyQuestions(survey: Survey) {
     }
   };
 
+  const resetSurvey = () => {
+    setAnswers({});
+    setSelectedOptions([]);
+    setCustomAnswers({});
+    setCurrentQuestionIndex(0);
+    setIsCompleted(false);
+    setSurveyResponseID(null);
+  };
+
   return {
     questions,
     currentQuestion,
@@ -204,5 +223,6 @@ export function useSurveyQuestions(survey: Survey) {
     handleOptionChange,
     surveyResponseID,
     setSurveyResponseID,
+    resetSurvey,
   };
 }

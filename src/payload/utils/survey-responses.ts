@@ -80,3 +80,20 @@ export const updateSurveyRemoveResponse = async (
 
   return updatedSurveyResponse;
 };
+
+export const updateSurveyResponseUserInfo = async (
+  surveyResponseID: number,
+  userInfo: SurveyResponseUserInfo,
+) => {
+  const payload = await getPayload({ config });
+
+  const updatedSurveyResponse = await payload.update({
+    collection: "survey-responses",
+    id: surveyResponseID,
+    data: {
+      userInfo,
+    },
+  });
+
+  return updatedSurveyResponse;
+};
