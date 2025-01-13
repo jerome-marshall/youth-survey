@@ -146,7 +146,10 @@ export default function Survey({ survey }: { survey: Survey }) {
       <Button
         onClick={handleNext}
         className="mt-10 w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md hover:from-purple-700 hover:to-pink-700"
-        disabled={!hasSelectedOptions || !satisfiesRanking}
+        disabled={
+          !hasSelectedOptions ||
+          (currentQuestion.type === "ranking" && !satisfiesRanking)
+        }
       >
         Next
       </Button>
