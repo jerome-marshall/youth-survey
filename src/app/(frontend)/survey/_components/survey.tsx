@@ -43,6 +43,12 @@ export default function Survey({ survey }: { survey: Survey }) {
 
   const hasSelectedOptions = selectedOptions.length > 0;
 
+  let satisfiesRanking = false;
+  if (currentQuestion?.type === "ranking") {
+    satisfiesRanking =
+      selectedOptions.length === currentQuestion.options?.length;
+  }
+
   if (!questions) return null;
 
   if (isCompleted) {
@@ -140,7 +146,7 @@ export default function Survey({ survey }: { survey: Survey }) {
       <Button
         onClick={handleNext}
         className="mt-10 w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md hover:from-purple-700 hover:to-pink-700"
-        disabled={!hasSelectedOptions}
+        disabled={!hasSelectedOptions || !satisfiesRanking}
       >
         Next
       </Button>
