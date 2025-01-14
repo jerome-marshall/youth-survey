@@ -1,4 +1,25 @@
 import Link from "next/link";
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Faith Journey Survey",
+  description:
+    "Share your faith journey through our anonymous survey about faith and the Bible. Help us understand young people's perspectives better.",
+  openGraph: {
+    title: "Faith Journey Survey",
+    description:
+      "Share your faith journey through our anonymous survey about faith and the Bible. Help us understand young people's perspectives better.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Faith Journey Survey",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Faith Journey Survey",
+    description:
+      "Share your faith journey through our anonymous survey about faith and the Bible.",
+  },
+};
 
 export default function HomePage() {
   return (
