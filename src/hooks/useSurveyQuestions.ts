@@ -155,7 +155,7 @@ export function useSurveyQuestions(survey: Survey) {
       if (option === CUSTOM_TEXT) {
         return {
           optionId: option,
-          optionText: customAnswers[currentQuestion.questionId] ?? "",
+          optionText: customAnswers[currentQuestion.questionId] ?? "Other",
         };
       }
 
