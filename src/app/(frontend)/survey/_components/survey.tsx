@@ -46,8 +46,7 @@ export default function Survey({ survey }: { survey: Survey }) {
 
   let satisfiesRanking = false;
   if (currentQuestion?.type === "ranking") {
-    satisfiesRanking =
-      selectedOptions.length === currentQuestion.options?.length;
+    satisfiesRanking = selectedOptions.some((option) => option !== "");
   }
 
   if (!questions) return null;
@@ -106,7 +105,7 @@ export default function Survey({ survey }: { survey: Survey }) {
                   </div>
                 </div>
                 <Button
-                  disabled={!contactInfo.email || !contactInfo.phone}
+                  disabled={!contactInfo.email && !contactInfo.phone}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-2 text-white shadow-md hover:from-purple-700 hover:to-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={() => {
                     setContactSubmitted(true);

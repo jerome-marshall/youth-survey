@@ -74,11 +74,18 @@ export function useSurveyQuestions(survey: Survey) {
 
   const handleNext = () => {
     if (!currentQuestion || !questions) return;
+    console.log("🚀 ~ handleNext ~ currentQuestion:", currentQuestion);
+
+    // For ranking questions, filter out unranked options before saving
+    let optionsToSave = selectedOptions;
+    if (currentQuestion.type === "ranking") {
+      optionsToSave = selectedOptions.filter((option) => option !== ""); // Remove any empty rankings
+    }
 
     // Save current answers first
     const answersToSave = {
       ...answers,
-      [currentQuestion.questionId]: selectedOptions,
+      [currentQuestion.questionId]: optionsToSave,
     };
     setAnswers(answersToSave);
 
