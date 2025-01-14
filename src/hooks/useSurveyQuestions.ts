@@ -74,12 +74,11 @@ export function useSurveyQuestions(survey: Survey) {
 
   const handleNext = () => {
     if (!currentQuestion || !questions) return;
-    console.log("🚀 ~ handleNext ~ currentQuestion:", currentQuestion);
 
     // For ranking questions, filter out unranked options before saving
     let optionsToSave = selectedOptions;
     if (currentQuestion.type === "ranking") {
-      optionsToSave = selectedOptions.filter((option) => option !== ""); // Remove any empty rankings
+      optionsToSave = selectedOptions.filter((option) => option !== "");
     }
 
     // Save current answers first
@@ -124,19 +123,27 @@ export function useSurveyQuestions(survey: Survey) {
       break;
     }
 
-    // Update index and load next question's answers
+    // Update index and reset selected options for new questions
     let hasCompleted = false;
     if (nextIndex < questions.length) {
       const nextQuestion = questions[nextIndex];
       if (!nextQuestion) return;
-      const nextAnswer = answers[nextQuestion.questionId];
-      setSelectedOptions(
-        nextAnswer
-          ? Array.isArray(nextAnswer)
-            ? nextAnswer
-            : [nextAnswer]
-          : [],
-      );
+
+      // Only load previous answers if this question was already answered
+      if (answers[nextQuestion.questionId]) {
+        const nextAnswer = answers[nextQuestion.questionId];
+        setSelectedOptions(
+          nextAnswer
+            ? Array.isArray(nextAnswer)
+              ? nextAnswer
+              : [nextAnswer]
+            : [],
+        );
+      } else {
+        // Reset selected options for new questions
+        setSelectedOptions([]);
+      }
+
       setCurrentQuestionIndex(nextIndex);
     } else {
       hasCompleted = true;
