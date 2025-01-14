@@ -107,9 +107,8 @@ export function UserInfoForm({ onSubmit, initialData }: UserInfoFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -123,9 +122,26 @@ export function UserInfoForm({ onSubmit, initialData }: UserInfoFormProps) {
             render={({ field }) => (
               <FormItem className="col-span-2">
                 <FormLabel>Profession</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your profession" {...field} />
-                </FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your profession" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Student">Student</SelectItem>
+                    <SelectItem value="Engineer">Engineer</SelectItem>
+                    <SelectItem value="Doctor">Doctor</SelectItem>
+                    <SelectItem value="Pastor">Pastor</SelectItem>
+                    <SelectItem value="Nurse">Nurse</SelectItem>
+                    <SelectItem value="Unemployed">Unemployed</SelectItem>
+                    <SelectItem value="Entrepreneur">Entrepreneur</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

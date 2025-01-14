@@ -188,7 +188,7 @@ export default function Survey({ survey }: { survey: Survey }) {
   if (step === "userInfo") {
     return (
       <SurveyLayout
-        title="User Information"
+        title="Tell us about yourself"
         hideProgress
         onBack={() => setStep("intro")}
       >
